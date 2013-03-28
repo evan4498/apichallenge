@@ -24,23 +24,27 @@ print
 print "Using domain...", domain.name
 print
 
-fqdn = str(raw_input("What is the FQDN you want an A record for? "))
-if not domain.name in fqdn:
-  print "You must type the full FQDN...  exiting!"
-  quit()
+while True:
+  fqdn = str(raw_input("What is the FQDN you want an A record for? "))
+  if not domain.name in fqdn:
+    print "You must type the full FQDN..."
+  else:
+    break
 
-ipaddr = str(raw_input("What IP address should this A record point to? "))
-try:
-  first, second, third, fourth = [part for part in map(int, ipaddr.split(".")) if part < 255]
-except exceptions.ValueError as excmsg:
-  print "You did not enter a valid IP... exiting!"
-  quit()
+while True:
+  ipaddr = str(raw_input("What IP address should this A record point to? "))
+  try:
+    first, second, third, fourth = [part for part in map(int, ipaddr.split(".")) if part < 255]
+    break
+  except exceptions.ValueError as excmsg:
+    print "You did not enter a valid IP... exiting!"
  
-ttltime = int(raw_input("What do you want the ttl to be? (300-86400) "))
-if ttltime < 300 or ttltime > 86400:
-  print "You must enter a TTL between 300 and 86400... exiting!"
-  quit()
-
+while True:
+  ttltime = int(raw_input("What do you want the ttl to be? (300-86400) "))
+  if ttltime < 300 or ttltime > 86400:
+    print "You must enter a TTL between 300 and 86400... exiting!"
+  else:
+    break
 
 try:
   subcreate = domain.add_records({"type": "A","name": fqdn,"data": ipaddr,"ttl": ttltime})
