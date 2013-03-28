@@ -1,4 +1,4 @@
-apichallenge
+apichallenges
 ============
 
-API Challenges
+API Challenges for Rackspace
