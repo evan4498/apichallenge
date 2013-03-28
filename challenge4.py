@@ -40,11 +40,15 @@ while True:
     print "You did not enter a valid IP..."
  
 while True:
-  ttltime = int(raw_input("What do you want the ttl to be? (300-86400) "))
-  if ttltime < 300 or ttltime > 86400:
-    print "You must enter a TTL between 300 and 86400..."
-  else:
-    break
+  ttltime = raw_input("What do you want the ttl to be? (300-86400) ")
+  try:
+    ttltime = int(ttltime)
+    if ttltime < 300 or ttltime > 86400:
+      print "You must enter a TTL between 300 and 86400..."
+    else:
+      break
+  except:
+      print "You must enter a valid integer between 300 and 86400..."
 
 try:
   subcreate = domain.add_records({"type": "A","name": fqdn,"data": ipaddr,"ttl": ttltime})
