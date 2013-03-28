@@ -37,12 +37,12 @@ while True:
     first, second, third, fourth = [part for part in map(int, ipaddr.split(".")) if part < 255]
     break
   except exceptions.ValueError as excmsg:
-    print "You did not enter a valid IP... exiting!"
+    print "You did not enter a valid IP..."
  
 while True:
   ttltime = int(raw_input("What do you want the ttl to be? (300-86400) "))
   if ttltime < 300 or ttltime > 86400:
-    print "You must enter a TTL between 300 and 86400... exiting!"
+    print "You must enter a TTL between 300 and 86400..."
   else:
     break
 
