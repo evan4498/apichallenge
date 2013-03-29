@@ -52,12 +52,10 @@ while True:
 
 try:
   subcreate = domain.add_records({"type": "A","name": fqdn,"data": ipaddr,"ttl": ttltime})
+  print "Created " + fqdn + "with IP " + ipaddr
 except exc.DomainRecordAdditionFailed as excmsg:
   print "FAILED: ", excmsg
   quit()
 except exc.BadRequest as excmsg:
   print "FAILED: ", excmsg
   quit()
-
-
-print "Created " + fqdn + "with IP " + ipaddr
