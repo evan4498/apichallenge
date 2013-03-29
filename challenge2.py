@@ -64,13 +64,13 @@ def createimage(server, image_name, newname):
 def createnewname(server, image_name, newname, image_id):
   while True:
     image = cs.images.get(image_id)
-    minram = image._info["minRam"]
+    flavorid = server.flavor["id"]
 
     if image.status == "ACTIVE":
     	print "Image creation complete!"
     	print "Creating new server", newname
-    	newserver = cs.servers.create(newname, image.id, 2)
-    	print "New server", newname, " is building...  Enjoy!"
+    	newserver = cs.servers.create(newname, image.id, flavorid)
+    	print "New server", newname, "is building...  Enjoy!"
     	break
     elif image.status == "SAVING":
       print "Still waiting..."
