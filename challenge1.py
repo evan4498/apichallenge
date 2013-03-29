@@ -59,7 +59,5 @@ def showdetails(server,rootpass):
     time.sleep(10)
     showdetails(serverinfo,rootpass)
 
-
-
 if __name__ == "__main__":
   main()
