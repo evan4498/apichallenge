@@ -83,6 +83,12 @@ def container_create(fqdn, domain, ttltime):
   
 def dns_create(fqdn, domain, ttltime, container):
   cdn_url = container.cdn_uri
+  
+  if cdn_url.startswith('http://'): 
+    cdn_url = cdn_url[7:] 
+  elif cdn_url.startswith('https://'): 
+    cdn_url = cdn_url[8:]
+
   subcreate = domain.add_records({"type": "CNAME","name": fqdn,"data": cdn_url,"ttl": ttltime}) 
 
 if __name__ == "__main__":
