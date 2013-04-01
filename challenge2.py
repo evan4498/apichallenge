@@ -74,7 +74,7 @@ def createnewname(server, image_name, newname, image_id):
     	break
     elif image.status == "SAVING":
       print "Still waiting..."
-      time.sleep(20)
+      time.sleep(30)
     
 
 if __name__ == "__main__":
