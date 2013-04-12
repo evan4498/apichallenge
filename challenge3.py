@@ -18,41 +18,36 @@
 
 import os
 import sys
-import time
 import pyrax
-import pyrax.exceptions as exc
-import exceptions
 
 creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(creds_file)
 cf = pyrax.cloudfiles
 
 def main():
-  getinfo()
+  getdir()
 
-def getinfo():
+def getdir():
   print "--------------------------------------------------"
+  
+  directory = raw_input("What directory should I upload? ")
+  
+  if os.path.isdir(directory) == True:
+    container_build(directory)
+  else:
+    print "The directory" , directory , "does not exist..."
+    getdir()
+
+  
+def container_build(directory):
   container_choice = raw_input("What container should I use (or create)? ")
-  print
-  
-  directory_choice = raw_input("What directory should I upload? ")
-  print
-
-  container_use(container_choice, directory_choice)
-  
-def container_use(container_choice, directory_choice):
   container = cf.create_container(container_choice)
-  print "Using container...  " , container.name
 
-  directory_scan(container, directory_choice)
-
-def directory_scan(container, directory_choice):
-  files = []
-  for filenames in os.walk(directory_choice):
-    files.append(os.path.join(filenames))
-    container.upload_file(filenames)
- 
-
+  upload_files(directory,container)
+  
+def upload_files(directory,container):
+  upload = cf.upload_folder(directory,container.name)    
+  print "Uploading", directory , "to container" , container.name , "..."
 
 if __name__ == "__main__":
   main()
