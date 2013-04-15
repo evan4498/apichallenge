@@ -48,6 +48,7 @@ def createservers(domain):
     
   print "Going to create two servers and a load balancer for them"
   serverbasename = str(raw_input ("Server name to add (I will add 1 and 2 to the end of this name for the servers): "))
+  
   fqdn = serverbasename + "." + domain.name
   servername1 = serverbasename + "1" + "." + domain.name
   servername2 = serverbasename + "2" + "." + domain.name
@@ -72,11 +73,9 @@ def create_lb(server1, server2, fqdn, domain):
   lb = clb.create(fqdn, port=80, protocol="HTTP", nodes=[node1, node2], virtual_ips=[vip])
   print "Load balancer" , lb.name , "with IP" , lb.virtual_ips[0].address , "building..."
   print "Please wait just a couple more minutes..."
-  time.sleep(60)
-  print "..."
-  time.sleep(60)
-  print "..."
-  time.sleep(60)
+  if not pyrax.utils.wait_until(lb, 'status', 'ACTIVE', interval=30, verbose=True):
+    print "Creating the lb failed"
+    sys.exit(3)
 
   lb_options(fqdn, lb, domain)
 
@@ -85,7 +84,6 @@ def lb_options(fqdn, lb, domain):
   lb.manager.set_error_page(lb, error_html)
   container = cf.create_container(fqdn)
   cferror = cf.store_object(container.name, "error.html", error_html)
-  lb.manager.add_health_monitor(lb, type="CONNECT", delay=10, timeout=10, attemptsBeforeDeactivation=3)
   print "Created an error page, which is also backed up to cloud files, and a health monitor"
   create_dns(fqdn, lb, domain)
 
@@ -95,7 +93,6 @@ def create_dns(fqdn, lb, domain):
   try:
     subcreate = domain.add_records({"type": "A","name": fqdn,"data": ipaddr,"ttl": ttltime})
     print "Created DNS record for", fqdn
-    print "Enjoy the wonderful world of" , fqdn
   except exc.DomainRecordAdditionFailed as excmsg:
     print "FAILED: ", excmsg
     quit()
@@ -103,6 +100,8 @@ def create_dns(fqdn, lb, domain):
     print "FAILED: ", excmsg
     quit()
 
+  lb.add_health_monitor(type="CONNECT", delay=10, timeout=10, attemptsBeforeDeactivation=3)
+  print "Enjoy the wonderful world of" , fqdn , "!!!"
 
 if __name__ == "__main__":
   main()
