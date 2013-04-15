@@ -21,6 +21,8 @@ import time
 import pyrax
 import pyrax.exceptions as exc
 import exceptions
+from os.path import expanduser
+home = expanduser("~")
 
 creds_file = os.path.expanduser("~/.rackspace_cloud_credentials")
 pyrax.set_credential_file(creds_file)
@@ -40,20 +42,34 @@ def main():
   print "Using domain...", domain.name
   print "--------------------------------------------------"
 
-  createservers(domain)
+  get_ssh(domain)
+  
+def get_ssh(domain):
+  ssh_loc = raw_input("Enter the full path to your public ssh key. (enter for ~/.ssh/id_rsa.pub)")
+  if ssh_loc == '':
+    ssh_loc = "~/.ssh/id_rsa.pub"
+  ssh_loc = expanduser(ssh_loc)
+  try:
+    ssh = open(ssh_loc).read()
+    createservers(domain, ssh)
+  except IOError:
+    get_ssh(domain)
+  
 
-def createservers(domain):
+def createservers(domain, ssh):
   csimage = "d531a2dd-7ae9-4407-bb5a-e5ea03303d98"
   csflavor = 2
-    
+
+  ssh_key = {"/root/.ssh/authorized_keys":ssh}
+      
   print "Going to create two servers and a load balancer for them"
   serverbasename = str(raw_input ("Server name to add (I will add 1 and 2 to the end of this name for the servers): "))
   
   fqdn = serverbasename + "." + domain.name
   servername1 = serverbasename + "1" + "." + domain.name
   servername2 = serverbasename + "2" + "." + domain.name
-  server1 = cs.servers.create(servername1, csimage, csflavor)
-  server2 = cs.servers.create(servername2, csimage, csflavor)
+  server1 = cs.servers.create(servername1, csimage, csflavor, files=ssh_key)
+  server2 = cs.servers.create(servername2, csimage, csflavor, files=ssh_key)
   print "Creating servers" , server1.name , "and" , server2.name
   print "Waiting for network info from the new servers... (could take a couple of minutes)"
   while not (server1.networks and server2.networks):
